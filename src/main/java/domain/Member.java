@@ -21,6 +21,9 @@ public class Member {
     @Embedded
     private Address address;
 
+    @Enumerated(EnumType.STRING)
+    private MemberType memberType;
+
     public void changeTeam(Team team) {
         this.team = team;
         team.getMembers().add(this);
@@ -64,5 +67,23 @@ public class Member {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public MemberType getMemberType() {
+        return memberType;
+    }
+
+    public void setMemberType(MemberType memberType) {
+        this.memberType = memberType;
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", address=" + address +
+                '}';
     }
 }
