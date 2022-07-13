@@ -25,17 +25,20 @@ public class jpaMain {
             member.setName("park");
             member.setAge(26);
             member.setAddress( Address.createAddress("수원", "파크로", "111-111"));
-            member.setTeam(team);
-            team.getMembers().add(member);
+
+            member.changeTeam(team);
 
             em.persist(member);
 //            기본문법(em);
-            Member member1 = em.createQuery("select m from Member m where m.name = :name", Member.class)
-                    .setParameter("name", "park")
-                    .getSingleResult();
+//            기본문법테스트(em);
+            String innerJoin = "select m from Member m inner join m.team t";
+            String outerJoin = "select m from Member m left join m.team t";
+            String setaJoin = "select m from Member m, Team t where m.name = t.name";
 
-            System.out.println("member1 = " + member1.getAge());
+            String leftOnJoin = "select m from Member m left join m.team t on t.name='selab'";
+            String setaOnJoin = "select m from Member m left join m.team t on m.name = t.name";
 
+            List<Member> resultList = em.createQuery(setaOnJoin, Member.class).getResultList();
 
             tx.commit();
 
@@ -47,6 +50,14 @@ public class jpaMain {
         }
 
         emf.close();
+    }
+
+    private static void 기본문법테스트(EntityManager em) {
+        Member member1 = em.createQuery("select m from Member m where m.name = :name", Member.class)
+                .setParameter("name", "park")
+                .getSingleResult();
+
+        System.out.println("member1 = " + member1.getAge());
     }
 
     private static void 기본문법(EntityManager em) {
