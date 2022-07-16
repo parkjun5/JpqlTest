@@ -76,24 +76,22 @@ public class jpaMain {
 //            String leftOnJoin = "select m from Member m left join m.team t on t.name='selab'";
 //            List<Member> resultList = em.createQuery(setaOnJoin, Member.class).getResultList();
 
-            em.flush();
+//            em.flush();
+//            em.clear();
+
+//            패치조인(em, teamA);
+//            네임쿼리(em, m2);
+            int count = em.createQuery("update Member m set m.age = 34")
+                    .executeUpdate();
+            System.out.println("member = " + member);
+
             em.clear();
 
-            String selectMemberWithTeam = "select m from Member m join fetch m.team";
-            String selectTeamWithMembers = "select distinct t from Team t join fetch t.members";
-//            String query2 = "select m.name, 'HELLO?', TRUE from Member m" +
-//                    " where m.memberType = domain.MemberType.ADMIN";
-            List<Team> resultList = em.createQuery(selectTeamWithMembers, Team.class)
-                    .getResultList();
+            Member newMember = em.find(Member.class, member.getId());
+            System.out.println("newMember = " + newMember);
 
-            for (Team team : resultList) {
-//                System.out.println("member1.getName() +\", \" + member1.getTeam().getName() = " + member1.getName() +", " + member1.getTeam().getName());
-                System.out.println("team.getName() = " + team.getName() + "|| team.getMembers() = " + team.getMembers().size());
-                for (Member teamMember : team.getMembers()) {
-                    System.out.println("----> teamMember = " + teamMember);
-                }
-            
-            }
+
+            System.out.println("count = " + count);
 
 
             tx.commit();
@@ -105,6 +103,32 @@ public class jpaMain {
         }
 
         emf.close();
+    }
+
+    private static void 네임쿼리(EntityManager em, Member m2) {
+        Member username = em.createNamedQuery("Member.findByUsername", Member.class)
+                .setParameter("username", m2.getName())
+                .getSingleResult();
+
+        System.out.println("username = " + username);
+    }
+
+    private static void 패치조인(EntityManager em, Team teamA) {
+        String selectMemberWithTeam = "select m from Member m join fetch m.team";
+        String selectTeamWithMembers = "select t from Team t  ";
+//            String selectByEntity = "select m from Member m where m = :member ";
+        String selectByEntity = "select m from Member m where m.team = :teamA ";
+
+//            String query2 = "select m.name, 'HELLO?', TRUE from Member m" +
+//                    " where m.memberType = domain.MemberType.ADMIN";
+        List<Member> resultList = em.createQuery(selectByEntity, Member.class)
+                .setParameter("teamA", teamA)
+                .getResultList();
+
+        for (Member team : resultList) {
+//                System.out.println("member1.getName() +\", \" + member1.getTeam().getName() = " + member1.getName() +", " + member1.getTeam().getName());
+            System.out.println("team.getName() = " + team.getName() + "|| team.getMembers() = " + team.getName());
+        }
     }
 
     private static void 조인예제(EntityManager em) {
